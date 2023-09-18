@@ -1,6 +1,6 @@
 
 import React from 'react';
-import * as idb from '../lib/idb';
+
 
 // Adding some basic styles
 const styles = {
