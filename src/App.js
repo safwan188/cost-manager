@@ -15,37 +15,52 @@ function App() {
   ];
 
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
-
   useEffect(() => {
     async function fetchData() {
       const db = await idb.openCostsDB("costsdb", 1);
       if (!db) console.log("Could not open the database.");
-      const monthlyCosts = await idb.getCostsByMonthAndYear(month, year);
-      setCosts(monthlyCosts);
+      
+      const transaction = db.transaction(["costs"], "readonly");
+      const objectStore = transaction.objectStore("costs");
+      const request = objectStore.getAll();
+
+      request.onsuccess = function(event) {
+        const allCosts = event.target.result;
+        setAllCosts(allCosts);
+      };
     }
     fetchData();
-  }, [month, year]);
+  }, [year]);
 
-  return (
+  const getCostsByMonth = (month) => {
+    return allCosts.filter(cost => {
+      const date = new Date(cost.date);
+      return date.getMonth() === month && date.getFullYear() === year;
+    });
+  }
+   return (
     <div className="App">
       <h1>Cost Manager</h1>
       <div>
-        <label>Select Month:</label>
-        <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-          {months.map((m, index) => <option value={index} key={index}>{m}</option>)}
-        </select>
         <label>Select Year:</label>
         <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
           {years.map(y => <option value={y} key={y}>{y}</option>)}
         </select>
       </div>
       <CostForm onNewCost={async () => {
-        const newCosts = await idb.getCostsByMonthAndYear(month, year);
-        setCosts(newCosts);
+        // Your existing logic here
       }} />
-      <MonthlyReport costs={costs} />
+      {months.map((month, index) => (
+        <div key={index}>
+          <h2>{month}</h2>
+          <MonthlyReport costs={getCostsByMonth(index)} />
+        </div>
+      ))}
     </div>
   );
 }
+
+
+
 
 export default App;
