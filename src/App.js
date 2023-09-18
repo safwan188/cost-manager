@@ -19,6 +19,7 @@ function App() {
   useEffect(() => {
     async function fetchData() {
       const db = await idb.openCostsDB("costsdb", 1);
+      if (!db) console.log("Could not open the database.");
       const monthlyCosts = await idb.getCostsByMonthAndYear(month, year);
       setCosts(monthlyCosts);
     }
