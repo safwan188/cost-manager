@@ -23,7 +23,7 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```sh
-   git clone [repo_url]
+   git clone (https://github.com/safwan188/cost-manager.git)
 Navigate to the project directory:
 
 cd cost-manager
